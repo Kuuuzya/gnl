@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: skuznets <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/13 17:42:39 by dvoronin          #+#    #+#             */
-/*   Updated: 2024/04/22 19:10:31 by skuznets         ###   ########.fr       */
+/*   Created: 2024/04/13 17:42:16 by dvoronin          #+#    #+#             */
+/*   Updated: 2024/04/22 19:09:54 by skuznets         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_read(int fd, char *buf, char *str)
 {
@@ -65,39 +65,38 @@ char	*ft_line(char *str)
 
 char	*get_next_line(int fd)
 {
-	char			*current_line;
+	char			*line;
 	char			*buf;
-	static char		*str;
+	static char		*str[OPEN_MAX];
 
-	if (BUFFER_SIZE < 1 || fd < 0)
+	if (BUFFER_SIZE < 1 || fd < 0 || fd > OPEN_MAX)
 		return (0);
 	buf = malloc(BUFFER_SIZE + 1);
 	if (!buf)
 		return (0);
-	str = ft_read(fd, buf, str);
-	if (!str || str[0] == '\0')
+	str[fd] = ft_read(fd, buf, str[fd]);
+	if (!str[fd] || str[fd][0] == '\0')
 	{
-		free(str);
-		str = 0;
+		free(str[fd]);
+		str[fd] = 0;
 		return (NULL);
 	}
-	current_line = ft_line(str);
-	str = ft_remain(str);
-	return (current_line);
+	line = ft_line(str[fd]);
+	str[fd] = ft_remain(str[fd]);
+	return (line);
 }
 
-//int	main()
-//{
-//	int i;
-//	int fd;
-//
-//	i = 0;
-//	fd = open("test.txt", O_RDONLY);
-//	while (i < 10)
-//	{
-//		printf("%s", get_next_line(fd));
-//		i++;
-//	}
-//	close(fd);
-//	return (0);
-//}
+// int main()
+// {
+// 	int i = 0;
+// 	int fd1 = open("test.txt", O_RDONLY);
+// 	int	fd2 = open("test2.txt", O_RDONLY);
+// 	while (i < 5)
+// 	{
+// 		printf("%s", get_next_line(fd1));
+// 		printf("%s", get_next_line(fd2));
+// 		i++;
+// 	}
+// 	// close(fd);
+// 	return (0);
+// }
